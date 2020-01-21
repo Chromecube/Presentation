@@ -14,7 +14,7 @@ This is a presentation tool I wrote for a school event.
 - Displays a logo on the upper left side of the screen
 - Shows a description on the left and right side of the screen
 - Highly configurable:
-    - Use *A* and *D* to go through the images
+    - Use *A* and *D* to go to the previous or next image
     - Use *E* to display the running directory in your file browser
     - Use *L* to enable/disable the logo
     - Use *U* to invert the colors (black <-> white)
@@ -25,11 +25,12 @@ This is a presentation tool I wrote for a school event.
 - Scaling:
     - Use *S* to toggle between screen and logo scaling (default: screen)
     - Use *+* and *-* to increase or decrease the size of the screen/logo
-    - This is especially useful when working with a beamer because you don't know how large
+    - This is especially useful when working with a projector because you don't know how large
        the image will be displayed!
 - Fast-Type:
     - Type in the index (starting at 0) of the image to jump to it by pressing *Enter*
     - **Important:** You always have to type TWO numbers! (so 02 for the picture at index 2)
+        - As a result, you this feature is not usable when having >100 pictures.
 
 ### How to Use
 
@@ -48,6 +49,8 @@ This is a presentation tool I wrote for a school event.
 Quick disclaimer: I wrote this within approximately 5 hours due to
 missing time, however it should run stable, but it isn't the user-friendliest
 software in the world. 
+
+Even though I improved the project's structure over time, it could still suffer from a bit of technical debt. Sorry! ;(
 
 Pull request are open for improvements if you want to tackle this!
 
