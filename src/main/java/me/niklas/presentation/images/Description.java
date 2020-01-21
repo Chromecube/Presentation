@@ -1,4 +1,4 @@
-package me.niklas.presentation;
+package me.niklas.presentation.images;
 
 /**
  * Created by Niklas on 6/15/19 in Presentation

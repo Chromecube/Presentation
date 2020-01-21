@@ -1,4 +1,4 @@
-package me.niklas.presentation;
+package me.niklas.presentation.images;
 
 /*import com.google.gson.Gson;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * Created by Niklas on 6/14/19 in Presentation
  */
-class ResourceLoader {
+public class ResourceLoader {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

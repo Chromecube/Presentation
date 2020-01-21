@@ -1,9 +1,11 @@
 package me.niklas.presentation;
 
+import me.niklas.presentation.images.Description;
+
 /**
  * Created by Niklas on 6/15/19 in Presentation
  */
-class Utils {
+public class Utils {
 
     public static java.awt.Color invertColor(java.awt.Color color) {
         return new java.awt.Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue(), color.getAlpha());

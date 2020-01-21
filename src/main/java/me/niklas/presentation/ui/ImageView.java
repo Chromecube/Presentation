@@ -1,5 +1,7 @@
-package me.niklas.presentation;
+package me.niklas.presentation.ui;
 
+import me.niklas.presentation.Utils;
+import me.niklas.presentation.images.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 public class ImageView extends JPanel {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Main main;
+    private final UiController controller;
 
     private int xLimit; //The horizontal limit
     private int yLimit; //The vertical limit
@@ -45,19 +47,19 @@ public class ImageView extends JPanel {
     private Color bgColor = Color.white; //The background color
     private Description description = new Description("", ""); //The description of an image
 
-    public ImageView(Main main) {
-        this.main = main;
+    public ImageView(UiController controller) {
+        this.controller = controller;
         reload();
     }
 
     private void reload() {
-        scaleFactor = scaleFactor > 1f ? 1f : scaleFactor < 0.2f ? 0.2f : scaleFactor;
+        scaleFactor = scaleFactor > 1f ? 1f : Math.max(scaleFactor, 0.2f);
 
-        xLimit = (int) (Constants.SCREEN_SIZE.width * scaleFactor);
-        yLimit = (int) (Constants.SCREEN_SIZE.height * scaleFactor);
+        xLimit = (int) (UiConstants.SCREEN_SIZE.width * scaleFactor);
+        yLimit = (int) (UiConstants.SCREEN_SIZE.height * scaleFactor);
 
-        main.getFrame().setSize(xLimit, yLimit);
-        main.getFrame().setLocation((Constants.SCREEN_SIZE.width - xLimit) / 2, (Constants.SCREEN_SIZE.height - yLimit) / 2);
+        controller.getFrame().setSize(xLimit, yLimit);
+        controller.getFrame().setLocation((UiConstants.SCREEN_SIZE.width - xLimit) / 2, (UiConstants.SCREEN_SIZE.height - yLimit) / 2);
 
         maxX = (int) (xLimit / 2.0);
         maxY = (int) (yLimit / 1.1);
@@ -65,7 +67,7 @@ public class ImageView extends JPanel {
         setLogo(rawLogo);
         setImage(raw);
 
-        main.getFrame().repaint();
+        controller.getFrame().repaint();
     }
 
 
@@ -75,30 +77,27 @@ public class ImageView extends JPanel {
 
         Graphics2D g = (Graphics2D) orig;
 
+        //Fill background
         g.setColor(bgColor);
         g.fillRect(0, 0, getWidth(), getHeight());
+        //Enable fancy rendering
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (main.isLocked()) {
-            g.setColor(Color.red);
-            g.fillRect(getWidth() - 2, getHeight() - 2, 2, 2);
-        }
-
+        //Set up font family & color
         g.setFont(new Font("Arial", Font.PLAIN, (int) (36 * scaleFactor)));
         g.setColor(Utils.invertColor(bgColor));
 
 
-        if (!isFullscreen && showMain) {
+        if (!isFullscreen && showMain) { //Display description if required
             drawText(g, description.getName(), xLimit / 12, (yLimit / 2) - (g.getFontMetrics().getHeight() / 2));
             drawText(g, description.getNumber(), (int) (xLimit * 0.88f), (yLimit / 2) - (g.getFontMetrics().getHeight() / 2));
         }
 
-        if (logoEnabled && logo != null && !isFullscreen) {
+        if (logoEnabled && logo != null && !isFullscreen) { //Display logo if required (top left corner)
             g.drawImage(logo, 0, 0, this);
         }
 
-        if (!showMain) return;
+        if (!showMain) return; //Option to only display the background color
 
 
         if (image == null) {
@@ -122,40 +121,36 @@ public class ImageView extends JPanel {
         index+=dir;*/
 
 
-        if (!isFullscreen) {
+        if (!isFullscreen) { //Draw image in the normal aspect ratio
             g.drawImage(image, posX, posY, this);
-        } else {
+        } else { //Calculate maximum size and draw the image
             g.drawImage(fullscreen, (xLimit - fullscreen.getWidth(this)) / 2, (yLimit - fullscreen.getHeight(this)) / 2, this);
         }
     }
 
     private void drawText(Graphics2D g, String text, int x, int y) {
-        String[] lines = text.split(";n");
+        String[] lines = text.split(";n"); //Manual line breaks
 
         double multi = lines.length / 2.0;
 
-        y -= g.getFontMetrics().getHeight() * multi;
+        y -= g.getFontMetrics().getHeight() * multi; //Use the font height in the calculation
         for (String s : lines) {
-            g.drawString(s.trim(), x, y += g.getFontMetrics().getHeight());
+            g.drawString(s.trim(), x, y += g.getFontMetrics().getHeight()); //Draw lines from top to bottom
         }
-    }
-
-    public Image getImage() {
-        return image;
     }
 
     public void setImage(BufferedImage image) {
         this.raw = image;
         if (image == null) return;
-
+        //Calculate the required scaling factor to make it fit into the box
         float ratio = Math.min((float) maxX / image.getWidth(), (float) maxY / image.getHeight());
 
         logger.debug(String.format("Image scaling ratio is %f", ratio));
-
+        //Create temporary buffered image with recommended ratio
         BufferedImage temp = new BufferedImage((int) (image.getWidth(this) * ratio), (int) (image.getHeight(this) * ratio), TYPE_INT_ARGB);
 
         logger.debug(String.format("Scaled size is [%d,%d]", temp.getWidth(), temp.getHeight()));
-
+        //Perform scaling operation (bilinear scaling)
         AffineTransform at = new AffineTransform();
         at.scale(ratio, ratio);
 
@@ -168,83 +163,65 @@ public class ImageView extends JPanel {
         posX = (xLimit - this.image.getWidth(this)) / 2;
         posY = (yLimit - this.image.getHeight(this)) / 2;
 
-        main.getFrame().repaint();
+        controller.getFrame().repaint();
     }
 
     private void calculateFullscreen() {
+        //Calculate required scaling factor
         float ratio = Math.min((float) xLimit / raw.getWidth(), (float) yLimit / raw.getHeight());
 
         logger.debug(String.format("Image fullscreen scaling ratio is %f .", ratio));
-
+        //Create temporary buffered image with recommended ratio
         BufferedImage temp = new BufferedImage((int) (raw.getWidth() * ratio), (int) (raw.getHeight() * ratio), TYPE_INT_ARGB);
 
         logger.debug(String.format("Scaled fullscreen image size is [%d,%d]", temp.getWidth(), temp.getHeight()));
-
+        //Perform scaling operation (bilinear scaling)
         AffineTransform at = new AffineTransform();
         at.scale(ratio, ratio);
 
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 
-
         this.fullscreen = scaleOp.filter(raw, temp);
 
-        main.getFrame().repaint();
+        controller.getFrame().repaint();
     }
 
     public void setDescription(Description desc) {
         this.description = desc;
         if (description == null) description = Description.EMPTY;
-        main.getFrame().repaint();
+        controller.getFrame().repaint();
     }
 
-    public Image getLogo() {
-        return logo;
-    }
 
     public void setLogo(BufferedImage logo) {
         this.rawLogo = logo;
 
-        logoScaleFactor = logoScaleFactor > 2f ? 2f : logoScaleFactor < 0.1f ? 0.1f : logoScaleFactor;
+        logoScaleFactor = logoScaleFactor > 2f ? 2f : Math.max(logoScaleFactor, 0.1f); //Limit the scaling factor (0.1 ... 2.0 times allowed)
         if (logo == null) {
             this.logo = null;
             logger.error("Logo is null");
             return;
         }
-        float scaleFactor = (float) (xLimit / 5) / logo.getWidth(this);
-        scaleFactor *= this.logoScaleFactor; //Add public scale factor
-        logger.debug(String.format("Global logo scaling scaling ratio is %f, logo image scaling ratio is %f.", logoScaleFactor, scaleFactor));
 
+        float scaleFactor = (float) (xLimit / 5) / logo.getWidth(this); //Logo has to be quadratic! Calculate the real scale factor
+        scaleFactor *= this.logoScaleFactor; //Add general scale factor
+        logger.debug(String.format("Global logo scaling scaling ratio is %f, logo image scaling ratio is %f.", logoScaleFactor, scaleFactor));
+        //Create temporary buffered image with required size
         BufferedImage temp = new BufferedImage((int) (logo.getWidth() * scaleFactor), (int) (logo.getHeight() * scaleFactor), TYPE_INT_ARGB);
 
         logger.debug(String.format("Scaled logo image size is [%d,%d]", temp.getWidth(), temp.getHeight()));
-
+        //Perform scaling operation (bilinear scaling)
         AffineTransform at = new AffineTransform();
         at.scale(scaleFactor, scaleFactor);
 
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 
         this.logo = scaleOp.filter(logo, temp);
-        main.getFrame().repaint();
-    }
-
-    public boolean isLogoEnabled() {
-        return logoEnabled;
-    }
-
-    public void setLogoEnabled(boolean logoEnabled) {
-        this.logoEnabled = logoEnabled;
+        controller.getFrame().repaint();
     }
 
     public void toggleLogo() {
         logoEnabled = !logoEnabled;
-    }
-
-    public Color getBgColor() {
-        return bgColor;
-    }
-
-    public void setBgColor(Color bgColor) {
-        this.bgColor = bgColor;
     }
 
     public void toggleBg() {

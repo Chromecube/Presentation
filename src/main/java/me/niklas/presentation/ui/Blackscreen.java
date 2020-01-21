@@ -1,4 +1,4 @@
-package me.niklas.presentation;
+package me.niklas.presentation.ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ public class Blackscreen extends JPanel {
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
         frame.add(this);
-        frame.setCursor(Constants.BLANK_CURSOR);
+        frame.setCursor(UiConstants.BLANK_CURSOR);
         frame.repaint();
     }
 

@@ -1,4 +1,4 @@
-package me.niklas.presentation;
+package me.niklas.presentation.ui;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by Niklas on 6/14/19 in Presentation
  */
-class Constants {
+class UiConstants {
 
     public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
 
