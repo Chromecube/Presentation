@@ -94,7 +94,21 @@ public class ResourceManager {
         return loader.getLogo();
     }
 
+    public File getLogoFile() {
+        return loader.getLogoFile();
+    }
+
     public Description getCurrentDescription() {
         return Utils.getDescription(getCurrentImageFile().getName());
+    }
+
+    public int getIndex() {
+        return index.get();
+    }
+
+    public File getFileAtIndex(int index) {
+        if (index >= files.size()) return files.get(files.size() - 1);
+        if (index < 0) return files.get(0);
+        return files.get(index);
     }
 }

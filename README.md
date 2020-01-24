@@ -62,5 +62,11 @@ Pull request are open for improvements if you want to tackle this!
 - (GSON for the image configuration, I switched to filenames
     because I could add/remove images faster in that way)
 - Maven as my build tool    
+- [Spark](http://sparkjava.com/) as a local webserver
+
+Web libraries:
+- [jQuery](https://jquery.com/)
+- [Bootstrap 4](https://getbootstrap.com/)
+- [axios](https://github.com/axios/axios)
 
  

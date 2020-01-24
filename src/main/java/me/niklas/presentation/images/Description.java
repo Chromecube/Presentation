@@ -28,4 +28,12 @@ public class Description {
     public String getName() {
         return name;
     }
+
+    public String getWebNumber() {
+        return number.trim();
+    }
+
+    public String getWebName() {
+        return name.replace(";n", "").replace("  ", " ").trim();
+    }
 }

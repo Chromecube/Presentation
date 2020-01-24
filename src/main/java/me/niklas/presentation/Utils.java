@@ -25,4 +25,12 @@ public class Utils {
 
         return Description.parse(name);
     }
+
+    public static int tryParseInt(String input, int defaultValue) {
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
 }

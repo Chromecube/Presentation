@@ -22,6 +22,7 @@ public class ResourceLoader {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BufferedImage logo;
+    private File logoFile;
 //    private Description[] indices;
 
     public ResourceLoader() {
@@ -40,7 +41,8 @@ public class ResourceLoader {
                 return;
             }
 
-            logo = ImageIO.read(relevant[0]);
+            logoFile = relevant[0];
+            logo = ImageIO.read(logoFile);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,6 +76,10 @@ public class ResourceLoader {
 
     public BufferedImage getLogo() {
         return logo;
+    }
+
+    public File getLogoFile() {
+        return logoFile;
     }
 
     /*public Description getIndex(int index) {
